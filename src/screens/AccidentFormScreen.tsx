@@ -11,10 +11,10 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { getTenant } from '../tenants';
 import LocationPicker from '../components/LocationPicker';
+import WorkshopPicker from '../components/WorkshopPicker';
 import { RootStackParamList } from '../../App';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AccidentForm'>;
@@ -47,7 +47,7 @@ export default function AccidentFormScreen({ navigation }: Props) {
       };
       if (location.lat) params.lat = location.lat;
       if (location.lng) params.lng = location.lng;
-      if (selectedWorkshop) params.tow_to = selectedWorkshop;
+      if (selectedWorkshop) params.other_comments = `Workshop: ${selectedWorkshop}`;
 
       const response = await fetch(`${tenant.apiBaseUrl}/api/create_new_ticket/`, {
         method: 'POST',
@@ -102,17 +102,11 @@ export default function AccidentFormScreen({ navigation }: Props) {
             />
 
             <Text style={[styles.label, { color: tenant.primaryColor }]}>Workshop (Optional)</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={selectedWorkshop}
-                onValueChange={setSelectedWorkshop}
-              >
-                <Picker.Item label="Select a Workshop" value="" />
-                {tenant.workshops.map((w) => (
-                  <Picker.Item key={w.id} label={`${w.name} — ${w.city}`} value={w.name} />
-                ))}
-              </Picker>
-            </View>
+            <WorkshopPicker
+              primaryColor={tenant.primaryColor}
+              selectedWorkshop={selectedWorkshop}
+              onSelect={setSelectedWorkshop}
+            />
           </ScrollView>
 
           {/* LocationPicker lives OUTSIDE ScrollView — avoids FlatList nesting warning */}
@@ -164,13 +158,6 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     backgroundColor: '#fff',
-  },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
   },
   submitButton: {
     height: 56,

@@ -1,9 +1,3 @@
-export type Workshop = {
-  id: string;
-  name: string;
-  city: string;
-};
-
 export type TenantConfig = {
   id: string;
   name: string;
@@ -15,6 +9,5 @@ export type TenantConfig = {
   apiBaseUrl: string;
   insurerCode: string;
   hotlineNumber: string;
-  workshops: Workshop[];
   googleMapsApiKey: string;
 };

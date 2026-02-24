@@ -12,13 +12,6 @@ const tenants: Record<string, TenantConfig> = {
     insurerCode: 'Others',
     hotlineNumber: '+60312345678',
     googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
-    workshops: [
-      { id: 'demo-w1', name: 'Demo Auto Works', city: 'Kuala Lumpur' },
-      { id: 'demo-w2', name: 'PJ Service Centre', city: 'Petaling Jaya' },
-      { id: 'demo-w3', name: 'Shah Alam Motors', city: 'Shah Alam' },
-      { id: 'demo-w4', name: 'JB Auto Repair', city: 'Johor Bahru' },
-      { id: 'demo-w5', name: 'Penang Workshop', city: 'George Town' },
-    ],
   },
   pib: {
     id: 'pib',
@@ -32,13 +25,6 @@ const tenants: Record<string, TenantConfig> = {
     insurerCode: 'Pacific',
     hotlineNumber: '1800884488',
     googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
-    workshops: [
-      { id: 'pib-w1', name: 'Pacific Panel KL', city: 'Kuala Lumpur' },
-      { id: 'pib-w2', name: 'Pacific Panel PJ', city: 'Petaling Jaya' },
-      { id: 'pib-w3', name: 'Pacific Panel Shah Alam', city: 'Shah Alam' },
-      { id: 'pib-w4', name: 'Pacific Panel JB', city: 'Johor Bahru' },
-      { id: 'pib-w5', name: 'Pacific Panel Penang', city: 'George Town' },
-    ],
   },
   aia: {
     id: 'aia',
@@ -51,13 +37,6 @@ const tenants: Record<string, TenantConfig> = {
     insurerCode: 'AXA',
     hotlineNumber: '+60387654321',
     googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
-    workshops: [
-      { id: 'aia-w1', name: 'AIA Panel Workshop KL', city: 'Kuala Lumpur' },
-      { id: 'aia-w2', name: 'AIA Approved PJ Centre', city: 'Petaling Jaya' },
-      { id: 'aia-w3', name: 'AIA Shah Alam Hub', city: 'Shah Alam' },
-      { id: 'aia-w4', name: 'AIA JB Service Point', city: 'Johor Bahru' },
-      { id: 'aia-w5', name: 'AIA Penang Panel', city: 'George Town' },
-    ],
   },
 };
 
