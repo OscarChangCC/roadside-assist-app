@@ -1,31 +1,67 @@
 # RoadsideAssist
 
-A multi-tenant roadside assistance mobile app built with Expo (React Native) and TypeScript. Designed for insurance companies to white-label and deploy to their customers — providing instant one-tap access to breakdown and accident hotlines.
+A multi-tenant roadside assistance mobile app built with Expo (React Native) and TypeScript. Insurance companies white-label and deploy it to customers, giving them one-tap access to breakdown assistance and accident reporting with direct CRM integration.
 
 ---
 
-## Overview
+## App Flow
 
-RoadsideAssist is a call-trigger app. There is no backend. Its sole purpose is to:
+**HomeScreen** — three action buttons:
 
-1. Display the correct branding for the active tenant (insurer).
-2. Let users tap a button to call breakdown or accident hotlines.
-3. Show a confirmation modal before dialling to prevent accidental calls.
+1. **📞 Call Hotline** — dials the tenant's hotline number directly (`Linking.openURL tel:`)
+2. **🔧 Breakdown Assistance** — navigates to `BreakdownFormScreen`
+3. **🚨 Accident Hotline** — navigates to `AccidentFormScreen`
+
+**BreakdownFormScreen** — user enters vehicle number, contact number, and location (GPS or manual text), then submits to the CRM API. On success, a ticket confirmation is shown and the user returns to Home.
+
+**AccidentFormScreen** — same as Breakdown, plus a workshop picker (tow-to selection). Also submits to the CRM API.
+
+---
+
+## CRM API Integration
+
+Both form screens POST to the tenant's CRM backend:
+
+```
+POST {tenant.apiBaseUrl}/api/create_new_ticket/
+Content-Type: application/x-www-form-urlencoded
+```
+
+| Field | Description |
+|---|---|
+| `contact_number` | User's phone number |
+| `insurer` | Tenant's insurer code (e.g. `"AXA"`, `"Others"`) |
+| `vehicle_reg_num` | Vehicle registration (auto-uppercased in UI) |
+| `ticket_type` | `"Breakdown"` or `"Accident"` |
+| `lat` | GPS latitude decimal string (optional) |
+| `lng` | GPS longitude decimal string (optional) |
+| `tow_to` | Selected workshop name — Accident tickets only (optional) |
+
+Response: `{ "results": true, "ticket_id": 123 }`
+
+> **Note:** The `ticket_type` and `tow_to` fields may need to be added server-side to the Django CRM's `create_new_ticket` endpoint if not already present.
 
 ---
 
 ## Multi-Tenancy
 
-The active tenant is controlled by the `EXPO_PUBLIC_TENANT` environment variable set at build time.
+The active tenant is set by the `EXPO_PUBLIC_TENANT` environment variable at build time.
 
-| Variable              | Effect                                     |
-|-----------------------|--------------------------------------------|
-| `EXPO_PUBLIC_TENANT=demo` | Loads Demo Assist branding and numbers |
-| `EXPO_PUBLIC_TENANT=aia`  | Loads AIA Roadside branding and numbers |
+| Variable | Tenant |
+|---|---|
+| `EXPO_PUBLIC_TENANT=demo` | Demo Assist |
+| `EXPO_PUBLIC_TENANT=aia` | AIA Roadside |
 
-`EXPO_PUBLIC_` prefix is required by Expo for variables to be available in the app bundle at runtime (see [Expo docs on environment variables](https://docs.expo.dev/guides/environment-variables/)).
+At runtime, `src/tenants/index.ts` reads `process.env.EXPO_PUBLIC_TENANT` and returns the matching `TenantConfig`. Falls back to `demo` if not set.
 
-At runtime, `src/tenants/index.ts` reads `process.env.EXPO_PUBLIC_TENANT` and returns the matching `TenantConfig`. If no matching tenant is found, it falls back to `demo`.
+### TenantConfig fields
+
+| Field | Description |
+|---|---|
+| `apiBaseUrl` | CRM base URL, e.g. `"https://crm.example.com"` |
+| `insurerCode` | Insurer code sent to CRM as the `insurer` field, e.g. `"AXA"` or `"Others"` |
+| `hotlineNumber` | Direct dial number for the Call Hotline button |
+| `workshops` | Array of `{ id, name, city }` for the Accident form workshop picker |
 
 ---
 
@@ -33,19 +69,21 @@ At runtime, `src/tenants/index.ts` reads `process.env.EXPO_PUBLIC_TENANT` and re
 
 ```
 roadside-assist-app/
-├── App.tsx                        # Root component — sets up navigation
-├── app.json                       # Expo config
-├── eas.json                       # EAS Build profiles (per-tenant)
-├── assets/                        # App icons and splash screen
+├── App.tsx                          # Root — NavigationContainer + stack navigator
+├── app.json                         # Expo config
+├── eas.json                         # EAS Build profiles (per-tenant)
+├── assets/                          # Icons and splash screen
 └── src/
     ├── tenants/
-    │   ├── config.ts              # TenantConfig type definition
-    │   ├── tenants.ts             # All tenant configurations
-    │   └── index.ts               # getTenant() — reads EXPO_PUBLIC_TENANT
+    │   ├── config.ts                # TenantConfig type
+    │   ├── tenants.ts               # All tenant data
+    │   └── index.ts                 # getTenant() — reads EXPO_PUBLIC_TENANT
     ├── screens/
-    │   └── HomeScreen.tsx         # Main screen: branding + call buttons
+    │   ├── HomeScreen.tsx           # 3-button home screen
+    │   ├── BreakdownFormScreen.tsx  # Breakdown form + CRM submit
+    │   └── AccidentFormScreen.tsx   # Accident form + workshop picker + CRM submit
     └── components/
-        └── CallConfirmModal.tsx   # Confirmation bottom sheet before dialling
+        └── LocationPicker.tsx       # Reusable GPS/manual location toggle component
 ```
 
 ---
@@ -53,13 +91,10 @@ roadside-assist-app/
 ## Running Locally
 
 ```bash
-# Install dependencies
 npm install
-
-# Start Expo dev server (uses "demo" tenant by default)
 npx expo start
 
-# Run with a specific tenant
+# With a specific tenant
 EXPO_PUBLIC_TENANT=aia npx expo start
 ```
 
@@ -69,33 +104,16 @@ Scan the QR code with the [Expo Go](https://expo.dev/client) app on your device,
 
 ## Building Per-Tenant with EAS
 
-EAS Build profiles in `eas.json` handle tenant-specific env variables automatically.
-
 ```bash
-# Install EAS CLI
-npm install -g eas-cli
-
-# Log in to your Expo account
-eas login
-
-# Build for the demo tenant
 eas build --profile demo --platform android
-
-# Build for AIA tenant
 eas build --profile aia --platform ios
-
-# Development build (for use with Expo Dev Client)
-eas build --profile development --platform all
 ```
-
-Each profile injects `EXPO_PUBLIC_TENANT` into the build environment, so the app bundles with the correct branding baked in.
 
 ---
 
 ## Adding a New Tenant
 
-1. Open `src/tenants/tenants.ts`.
-2. Add a new entry to the `tenants` object:
+1. Add an entry to `src/tenants/tenants.ts`:
 
 ```ts
 newinsurer: {
@@ -105,29 +123,23 @@ newinsurer: {
   primaryColor: '#0A7EA4',
   secondaryColor: '#E0F4FF',
   logoText: 'NI',
-  breakdown: {
-    label: 'Breakdown Assistance',
-    number: '+60121234567',
-  },
-  accident: {
-    label: 'Accident Hotline',
-    number: '+60129876543',
-  },
+  apiBaseUrl: 'https://crm.newinsurer.example.com',
+  insurerCode: 'NewInsurer',
+  hotlineNumber: '+60121234567',
+  workshops: [
+    { id: 'ni-w1', name: 'NI Workshop KL', city: 'Kuala Lumpur' },
+  ],
 },
 ```
 
-3. Add a matching build profile in `eas.json`:
+2. Add a build profile in `eas.json`:
 
 ```json
 "newinsurer": {
   "distribution": "internal",
-  "env": {
-    "EXPO_PUBLIC_TENANT": "newinsurer"
-  }
+  "env": { "EXPO_PUBLIC_TENANT": "newinsurer" }
 }
 ```
-
-4. Run `eas build --profile newinsurer --platform android` to build.
 
 No code changes beyond `tenants.ts` and `eas.json` are needed.
 
@@ -137,11 +149,11 @@ No code changes beyond `tenants.ts` and `eas.json` are needed.
 
 | Dependency | Purpose |
 |---|---|
-| `expo` | Build toolchain, OTA updates, dev server |
+| `expo` | Build toolchain, dev server |
 | `react-native` | Cross-platform mobile UI |
+| `expo-location` | GPS location + reverse geocoding |
 | `@react-navigation/native` | Navigation container |
 | `@react-navigation/native-stack` | Stack navigator |
 | `react-native-screens` | Native screen optimisation |
-| `react-native-safe-area-context` | Safe area handling |
-
-No state management libraries. No UI component libraries. No backend.
+| `react-native-safe-area-context` | Safe area insets |
+| `@react-native-picker/picker` | Workshop picker on Accident form |

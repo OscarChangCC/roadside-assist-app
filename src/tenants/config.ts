@@ -1,3 +1,9 @@
+export type Workshop = {
+  id: string;
+  name: string;
+  city: string;
+};
+
 export type TenantConfig = {
   id: string;
   name: string;
@@ -5,12 +11,8 @@ export type TenantConfig = {
   primaryColor: string;
   secondaryColor: string;
   logoText: string;
-  breakdown: {
-    label: string;
-    number: string;
-  };
-  accident: {
-    label: string;
-    number: string;
-  };
+  apiBaseUrl: string;
+  insurerCode: string;
+  hotlineNumber: string;
+  workshops: Workshop[];
 };

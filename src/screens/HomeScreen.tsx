@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,39 +6,24 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Linking,
 } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { getTenant } from '../tenants';
-import CallConfirmModal from '../components/CallConfirmModal';
+import { RootStackParamList } from '../../App';
 
-type ModalState = {
-  visible: boolean;
-  label: string;
-  number: string;
-};
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-const MODAL_CLOSED: ModalState = { visible: false, label: '', number: '' };
-
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: Props) {
   const tenant = getTenant();
-  const [modal, setModal] = useState<ModalState>(MODAL_CLOSED);
-
-  const openModal = (label: string, number: string) => {
-    setModal({ visible: true, label, number });
-  };
-
-  const closeModal = () => setModal(MODAL_CLOSED);
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: tenant.secondaryColor }]}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: tenant.secondaryColor }]}>
       <StatusBar barStyle="dark-content" />
 
       {/* Header / Branding */}
       <View style={styles.header}>
-        <View
-          style={[styles.logoCircle, { backgroundColor: tenant.primaryColor }]}
-        >
+        <View style={[styles.logoCircle, { backgroundColor: tenant.primaryColor }]}>
           <Text style={styles.logoText}>{tenant.logoText}</Text>
         </View>
         <Text style={[styles.insurerName, { color: tenant.primaryColor }]}>
@@ -47,34 +32,40 @@ export default function HomeScreen() {
         <Text style={styles.tagline}>{tenant.tagline}</Text>
       </View>
 
-      {/* Call Buttons */}
+      {/* Buttons */}
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
-          style={[styles.callButton, { backgroundColor: tenant.primaryColor }]}
-          onPress={() =>
-            openModal(tenant.breakdown.label, tenant.breakdown.number)
-          }
+          style={[styles.primaryButton, { backgroundColor: tenant.primaryColor }]}
+          onPress={() => Linking.openURL(`tel:${tenant.hotlineNumber}`)}
           activeOpacity={0.85}
-          accessibilityLabel={`${tenant.breakdown.label}: ${tenant.breakdown.number}`}
           accessibilityRole="button"
+          accessibilityLabel="Call Hotline"
         >
-          <Text style={styles.callButtonIcon}>🔧</Text>
-          <Text style={styles.callButtonLabel}>{tenant.breakdown.label}</Text>
-          <Text style={styles.callButtonNumber}>{tenant.breakdown.number}</Text>
+          <Text style={styles.primaryButtonText}>📞 Call Hotline</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.callButton, { backgroundColor: tenant.primaryColor }]}
-          onPress={() =>
-            openModal(tenant.accident.label, tenant.accident.number)
-          }
+          style={[styles.outlineButton, { borderColor: tenant.primaryColor }]}
+          onPress={() => navigation.navigate('BreakdownForm')}
           activeOpacity={0.85}
-          accessibilityLabel={`${tenant.accident.label}: ${tenant.accident.number}`}
           accessibilityRole="button"
+          accessibilityLabel="Breakdown Assistance"
         >
-          <Text style={styles.callButtonIcon}>🚨</Text>
-          <Text style={styles.callButtonLabel}>{tenant.accident.label}</Text>
-          <Text style={styles.callButtonNumber}>{tenant.accident.number}</Text>
+          <Text style={[styles.outlineButtonText, { color: tenant.primaryColor }]}>
+            🔧 Breakdown Assistance
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.outlineButton, { borderColor: tenant.primaryColor }]}
+          onPress={() => navigation.navigate('AccidentForm')}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Accident Hotline"
+        >
+          <Text style={[styles.outlineButtonText, { color: tenant.primaryColor }]}>
+            🚨 Accident Hotline
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -82,14 +73,6 @@ export default function HomeScreen() {
       <View style={styles.footer}>
         <Text style={styles.footerText}>Powered by RoadsideAssist</Text>
       </View>
-
-      <CallConfirmModal
-        visible={modal.visible}
-        label={modal.label}
-        number={modal.number}
-        primaryColor={tenant.primaryColor}
-        onClose={closeModal}
-      />
     </SafeAreaView>
   );
 }
@@ -141,33 +124,33 @@ const styles = StyleSheet.create({
     gap: 16,
     justifyContent: 'center',
   },
-  callButton: {
+  primaryButton: {
+    height: 56,
     borderRadius: 16,
-    paddingVertical: 28,
-    paddingHorizontal: 24,
     alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 6,
   },
-  callButtonIcon: {
-    fontSize: 36,
-    marginBottom: 10,
-  },
-  callButtonLabel: {
-    fontSize: 20,
+  primaryButtonText: {
+    fontSize: 18,
     fontWeight: '700',
     color: '#fff',
-    textAlign: 'center',
-    marginBottom: 6,
   },
-  callButtonNumber: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: 'rgba(255,255,255,0.85)',
-    letterSpacing: 0.5,
+  outlineButton: {
+    height: 56,
+    borderRadius: 16,
+    borderWidth: 2,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  outlineButtonText: {
+    fontSize: 18,
+    fontWeight: '700',
   },
   footer: {
     paddingBottom: 16,
