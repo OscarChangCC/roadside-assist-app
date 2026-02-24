@@ -9,6 +9,7 @@ const tenants: Record<string, TenantConfig> = {
     secondaryColor: '#DBEAFE',
     logoText: 'DA',
     apiBaseUrl: 'https://crm.demo.example.com',
+    apiKey: process.env.EXPO_PUBLIC_API_KEY_DEMO ?? 'dev-others-key',
     programCode: 'Others',
     hotlineNumber: '+60312345678',
     googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
@@ -21,8 +22,9 @@ const tenants: Record<string, TenantConfig> = {
     secondaryColor: '#E8F2FB',
     logoText: 'PIB',
     logoImage: require('../../assets/logo-pib.png'),
-    // For local dev: replace with your Mac's LAN IP e.g. http://192.168.1.x:8000
-    apiBaseUrl: 'http://192.168.1.x:8000',
+    // For local dev: replace with your Mac's LAN IP e.g. http://192.168.1.x:8000  `networksetup -getinfo Wi-Fi`
+    apiBaseUrl: 'http://192.168.100.89:8000',
+    apiKey: process.env.EXPO_PUBLIC_API_KEY_PIB ?? 'dev-pacific-key',
     programCode: 'Pacific',
     hotlineNumber: '1800884488',
     googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',

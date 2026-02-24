@@ -69,6 +69,15 @@ export default function HomeScreen({ navigation }: Props) {
             🚨 Accident Hotline
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.statusButton}
+          onPress={() => navigation.navigate('CheckStatus')}
+        >
+          <Text style={[styles.statusButtonText, { color: tenant.primaryColor }]}>
+            📋 Check Service Status
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Footer */}
@@ -157,6 +166,16 @@ const styles = StyleSheet.create({
   outlineButtonText: {
     fontSize: 18,
     fontWeight: '700',
+  },
+  statusButton: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    marginTop: 8,
+  },
+  statusButtonText: {
+    fontSize: 15,
+    fontWeight: '500',
+    textDecorationLine: 'underline',
   },
   footer: {
     paddingBottom: 16,

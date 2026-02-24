@@ -47,7 +47,10 @@ export default function BreakdownFormScreen({ navigation }: Props) {
 
       const response = await fetch(`${tenant.apiBaseUrl}/api/create_new_ticket/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-API-Key': tenant.apiKey,
+        },
         body: new URLSearchParams(params).toString(),
       });
       const data = await response.json();
@@ -61,7 +64,6 @@ export default function BreakdownFormScreen({ navigation }: Props) {
         throw new Error('API returned failure');
       }
     } catch (error: unknown) {
-      console.error(error)
       Alert.alert('Submission Failed', 'Please call the hotline instead.');
     } finally {
       setSubmitting(false);
