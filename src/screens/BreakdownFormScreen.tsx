@@ -101,7 +101,7 @@ export default function BreakdownFormScreen({ navigation }: Props) {
 
           {/* LocationPicker lives OUTSIDE ScrollView — avoids FlatList nesting warning */}
           <View style={styles.locationSection}>
-            <Text style={[styles.label, { color: tenant.primaryColor }]}>Location</Text>
+            <Text style={[styles.label, { color: tenant.primaryColor }]}>Breakdown Location</Text>
             <LocationPicker
               primaryColor={tenant.primaryColor}
               googleMapsApiKey={tenant.googleMapsApiKey}

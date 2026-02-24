@@ -78,7 +78,7 @@ export default function AccidentFormScreen({ navigation }: Props) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.flex}>
-          {/* Scrollable top fields */}
+          {/* Scrollable top fields: vehicle + contact */}
           <ScrollView
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContent}
@@ -100,6 +100,16 @@ export default function AccidentFormScreen({ navigation }: Props) {
               onChangeText={setContactNumber}
               keyboardType="phone-pad"
             />
+          </ScrollView>
+
+          {/* Location + Workshop — outside ScrollView (both use FlatList internally) */}
+          <View style={styles.belowScroll}>
+            <Text style={[styles.label, { color: tenant.primaryColor }]}>Location</Text>
+            <LocationPicker
+              primaryColor={tenant.primaryColor}
+              googleMapsApiKey={tenant.googleMapsApiKey}
+              onLocationChange={setLocation}
+            />
 
             <Text style={[styles.label, { color: tenant.primaryColor }]}>Workshop (Optional)</Text>
             <WorkshopPicker
@@ -107,19 +117,9 @@ export default function AccidentFormScreen({ navigation }: Props) {
               selectedWorkshop={selectedWorkshop}
               onSelect={setSelectedWorkshop}
             />
-          </ScrollView>
-
-          {/* LocationPicker lives OUTSIDE ScrollView — avoids FlatList nesting warning */}
-          <View style={styles.locationSection}>
-            <Text style={[styles.label, { color: tenant.primaryColor }]}>Location</Text>
-            <LocationPicker
-              primaryColor={tenant.primaryColor}
-              googleMapsApiKey={tenant.googleMapsApiKey}
-              onLocationChange={setLocation}
-            />
           </View>
 
-          {/* Submit button — fixed at bottom */}
+          {/* Submit — pinned at bottom */}
           <View style={styles.footer}>
             <TouchableOpacity
               style={[styles.submitButton, { backgroundColor: tenant.primaryColor }, submitting && styles.disabled]}
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F8FAFC' },
   flex: { flex: 1 },
   scrollContent: { padding: 24, paddingBottom: 8 },
-  locationSection: { paddingHorizontal: 24, paddingTop: 8 },
+  belowScroll: { paddingHorizontal: 24, paddingTop: 8 },
   footer: { padding: 24, paddingTop: 16 },
   label: {
     fontSize: 12,
