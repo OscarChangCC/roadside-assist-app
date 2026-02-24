@@ -103,7 +103,7 @@ export default function AccidentFormScreen({ navigation }: Props) {
           />
 
           <Text style={[styles.sectionLabel, { color: tenant.primaryColor }]}>Location</Text>
-          <LocationPicker primaryColor={tenant.primaryColor} onLocationChange={setLocation} />
+          <LocationPicker primaryColor={tenant.primaryColor} googleMapsApiKey={tenant.googleMapsApiKey} onLocationChange={setLocation} />
 
           <Text style={[styles.sectionLabel, { color: tenant.primaryColor }]}>Workshop (Optional)</Text>
           <View style={styles.pickerWrapper}>

@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Alert,
 } from 'react-native';
 import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 type LocationValue = {
   lat?: string;
@@ -16,16 +17,23 @@ type LocationValue = {
   text?: string;
 };
 
+type SelectedLocation = {
+  lat: string;
+  lng: string;
+  label: string;
+};
+
 type Props = {
   primaryColor: string;
+  googleMapsApiKey: string;
   onLocationChange: (location: LocationValue) => void;
 };
 
-export default function LocationPicker({ primaryColor, onLocationChange }: Props) {
-  const [mode, setMode] = useState<'gps' | 'manual'>('gps');
+export default function LocationPicker({ primaryColor, googleMapsApiKey, onLocationChange }: Props) {
+  const [mode, setMode] = useState<'gps' | 'autocomplete'>('gps');
   const [gpsStatus, setGpsStatus] = useState<string>('Tap to get your location');
   const [loadingGps, setLoadingGps] = useState(false);
-  const [manualText, setManualText] = useState('');
+  const [selected, setSelected] = useState<SelectedLocation | null>(null);
 
   const handleGps = async () => {
     setLoadingGps(true);
@@ -43,31 +51,26 @@ export default function LocationPicker({ primaryColor, onLocationChange }: Props
       const address = [geo.street, geo.city, geo.region, geo.country]
         .filter(Boolean)
         .join(', ');
-      setGpsStatus(address || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+      const label = address || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+      setGpsStatus(label);
+      setSelected({ lat: String(latitude), lng: String(longitude), label });
       onLocationChange({ lat: String(latitude), lng: String(longitude), text: address });
     } catch {
       setGpsStatus('Could not get location');
-      Alert.alert('Location Error', 'Unable to get GPS location. Please enter manually.');
+      Alert.alert('Location Error', 'Unable to get GPS location. Please search manually.');
       onLocationChange({});
     } finally {
       setLoadingGps(false);
     }
   };
 
-  const handleManualChange = (text: string) => {
-    setManualText(text);
-    onLocationChange({ text });
-  };
-
-  const switchMode = (next: 'gps' | 'manual') => {
+  const switchMode = (next: 'gps' | 'autocomplete') => {
     setMode(next);
+    setSelected(null);
     if (next === 'gps') {
       setGpsStatus('Tap to get your location');
-      onLocationChange({});
-    } else {
-      setManualText('');
-      onLocationChange({});
     }
+    onLocationChange({});
   };
 
   return (
@@ -92,43 +95,94 @@ export default function LocationPicker({ primaryColor, onLocationChange }: Props
           style={[
             styles.toggleBtn,
             styles.toggleRight,
-            mode === 'manual'
+            mode === 'autocomplete'
               ? { backgroundColor: primaryColor }
               : { backgroundColor: '#fff', borderColor: primaryColor },
           ]}
-          onPress={() => switchMode('manual')}
+          onPress={() => switchMode('autocomplete')}
         >
-          <Text style={[styles.toggleText, { color: mode === 'manual' ? '#fff' : primaryColor }]}>
-            Enter Manually
+          <Text style={[styles.toggleText, { color: mode === 'autocomplete' ? '#fff' : primaryColor }]}>
+            Search Address
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      {mode === 'gps' ? (
-        <TouchableOpacity
-          style={[styles.gpsButton, { borderColor: primaryColor }]}
-          onPress={handleGps}
-          disabled={loadingGps}
-        >
-          {loadingGps ? (
-            <ActivityIndicator color={primaryColor} />
-          ) : (
-            <Text style={[styles.gpsButtonText, { color: primaryColor }]}>📍 Get GPS Location</Text>
-          )}
-        </TouchableOpacity>
-      ) : (
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your location"
-          value={manualText}
-          onChangeText={handleManualChange}
-          multiline
+      {/* GPS mode */}
+      {mode === 'gps' && (
+        <>
+          <TouchableOpacity
+            style={[styles.gpsButton, { borderColor: primaryColor }]}
+            onPress={handleGps}
+            disabled={loadingGps}
+          >
+            {loadingGps ? (
+              <ActivityIndicator color={primaryColor} />
+            ) : (
+              <Text style={[styles.gpsButtonText, { color: primaryColor }]}>📍 Get GPS Location</Text>
+            )}
+          </TouchableOpacity>
+          <Text style={styles.gpsStatus}>{gpsStatus}</Text>
+        </>
+      )}
+
+      {/* Autocomplete mode */}
+      {mode === 'autocomplete' && (
+        <GooglePlacesAutocomplete
+          placeholder="Search address..."
+          query={{ key: googleMapsApiKey, language: 'en', components: 'country:my' }}
+          fetchDetails={true}
+          onPress={(data, details) => {
+            if (!details?.geometry?.location) return;
+            const { lat, lng } = details.geometry.location;
+            const loc: SelectedLocation = {
+              lat: String(lat),
+              lng: String(lng),
+              label: data.description,
+            };
+            setSelected(loc);
+            onLocationChange({ lat: String(lat), lng: String(lng), text: data.description });
+          }}
+          styles={{
+            textInput: {
+              borderWidth: 1,
+              borderColor: '#CBD5E1',
+              borderRadius: 10,
+              fontSize: 16,
+              backgroundColor: '#fff',
+              paddingHorizontal: 12,
+            },
+            container: { flex: 0 },
+          }}
+          enablePoweredByContainer={false}
+          keyboardShouldPersistTaps="handled"
         />
       )}
 
-      {mode === 'gps' && (
-        <Text style={styles.gpsStatus}>{gpsStatus}</Text>
+      {/* Map after selection */}
+      {selected !== null && (
+        <>
+          <MapView
+            style={styles.map}
+            region={{
+              latitude: parseFloat(selected.lat),
+              longitude: parseFloat(selected.lng),
+              latitudeDelta: 0.005,
+              longitudeDelta: 0.005,
+            }}
+            scrollEnabled={false}
+            zoomEnabled={false}
+          >
+            <Marker
+              coordinate={{
+                latitude: parseFloat(selected.lat),
+                longitude: parseFloat(selected.lng),
+              }}
+              title="Incident Location"
+              description={selected.label}
+            />
+          </MapView>
+          <Text style={styles.addressLabel}>{selected.label}</Text>
+        </>
       )}
     </View>
   );
@@ -173,13 +227,16 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: 8,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    minHeight: 56,
+  map: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginTop: 12,
+  },
+  addressLabel: {
+    fontSize: 13,
+    color: '#64748B',
+    fontStyle: 'italic',
+    marginTop: 6,
   },
 });

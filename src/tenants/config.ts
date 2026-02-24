@@ -16,4 +16,5 @@ export type TenantConfig = {
   insurerCode: string;
   hotlineNumber: string;
   workshops: Workshop[];
+  googleMapsApiKey: string;
 };

@@ -100,7 +100,7 @@ export default function BreakdownFormScreen({ navigation }: Props) {
           />
 
           <Text style={[styles.sectionLabel, { color: tenant.primaryColor }]}>Location</Text>
-          <LocationPicker primaryColor={tenant.primaryColor} onLocationChange={setLocation} />
+          <LocationPicker primaryColor={tenant.primaryColor} googleMapsApiKey={tenant.googleMapsApiKey} onLocationChange={setLocation} />
 
           <TouchableOpacity
             style={[

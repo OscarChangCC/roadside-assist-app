@@ -31,9 +31,6 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.logoText}>{tenant.logoText}</Text>
           </View>
         )}
-        <Text style={[styles.insurerName, { color: tenant.primaryColor }]}>
-          {tenant.name}
-        </Text>
         <Text style={styles.tagline}>{tenant.tagline}</Text>
       </View>
 
@@ -76,7 +73,6 @@ export default function HomeScreen({ navigation }: Props) {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Powered by RoadsideAssist</Text>
       </View>
     </SafeAreaView>
   );
