@@ -16,7 +16,7 @@ import { getWorkshops, Workshop } from '../services/workshopService';
 type WorkshopPickerProps = {
   primaryColor: string;
   selectedWorkshop: string;
-  onSelect: (name: string) => void;
+  onSelect: (workshop: Workshop) => void;
 };
 
 export default function WorkshopPicker({
@@ -61,8 +61,8 @@ export default function WorkshopPicker({
       })
     : workshops;
 
-  const handleSelect = (name: string) => {
-    onSelect(name);
+  const handleSelect = (workshop: Workshop) => {
+    onSelect(workshop);
     setModalVisible(false);
     setQuery('');
   };
@@ -132,7 +132,7 @@ export default function WorkshopPicker({
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.item}
-                  onPress={() => handleSelect(item.name)}
+                  onPress={() => handleSelect(item)}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.itemName}>{item.name}</Text>

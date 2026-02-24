@@ -15,6 +15,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { getTenant } from '../tenants';
 import LocationPicker from '../components/LocationPicker';
 import WorkshopPicker from '../components/WorkshopPicker';
+import { Workshop } from '../services/workshopService';
 import { RootStackParamList } from '../../App';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AccidentForm'>;
@@ -25,7 +26,7 @@ export default function AccidentFormScreen({ navigation }: Props) {
   const [vehicleReg, setVehicleReg] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [location, setLocation] = useState<LocationState>({});
-  const [selectedWorkshop, setSelectedWorkshop] = useState('');
+  const [selectedWorkshop, setSelectedWorkshop] = useState<Workshop | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -47,7 +48,9 @@ export default function AccidentFormScreen({ navigation }: Props) {
       };
       if (location.lat) params.lat = location.lat;
       if (location.lng) params.lng = location.lng;
-      if (selectedWorkshop) params.other_comments = `Workshop: ${selectedWorkshop}`;
+      if (selectedWorkshop) {
+        params.other_comments = `Workshop: ${selectedWorkshop.name}, ${selectedWorkshop.address}`;
+      }
 
       const response = await fetch(`${tenant.apiBaseUrl}/api/create_new_ticket/`, {
         method: 'POST',
@@ -114,7 +117,7 @@ export default function AccidentFormScreen({ navigation }: Props) {
             <Text style={[styles.label, { color: tenant.primaryColor }]}>Workshop (Optional)</Text>
             <WorkshopPicker
               primaryColor={tenant.primaryColor}
-              selectedWorkshop={selectedWorkshop}
+              selectedWorkshop={selectedWorkshop?.name ?? ''}
               onSelect={setSelectedWorkshop}
             />
           </View>
