@@ -19,6 +19,25 @@ const tenants: Record<string, TenantConfig> = {
       { id: 'demo-w5', name: 'Penang Workshop', city: 'George Town' },
     ],
   },
+  pib: {
+    id: 'pib',
+    name: 'The Pacific Insurance Berhad',
+    tagline: 'Always here when you need us',
+    primaryColor: '#005BAA',   // Pacific blue — swap if brand has different hex
+    secondaryColor: '#E8F2FB',
+    logoText: 'PIB',
+    logoImage: require('../../assets/logo-pib.png'),  // replace this file with real logo
+    apiBaseUrl: 'https://crm.example.com',            // update with real CRM URL
+    insurerCode: 'Pacific',
+    hotlineNumber: '1800884488',
+    workshops: [
+      { id: 'pib-w1', name: 'Pacific Panel KL', city: 'Kuala Lumpur' },
+      { id: 'pib-w2', name: 'Pacific Panel PJ', city: 'Petaling Jaya' },
+      { id: 'pib-w3', name: 'Pacific Panel Shah Alam', city: 'Shah Alam' },
+      { id: 'pib-w4', name: 'Pacific Panel JB', city: 'Johor Bahru' },
+      { id: 'pib-w5', name: 'Pacific Panel Penang', city: 'George Town' },
+    ],
+  },
   aia: {
     id: 'aia',
     name: 'AIA Roadside',

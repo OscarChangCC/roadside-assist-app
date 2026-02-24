@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
@@ -23,9 +24,13 @@ export default function HomeScreen({ navigation }: Props) {
 
       {/* Header / Branding */}
       <View style={styles.header}>
-        <View style={[styles.logoCircle, { backgroundColor: tenant.primaryColor }]}>
-          <Text style={styles.logoText}>{tenant.logoText}</Text>
-        </View>
+        {tenant.logoImage ? (
+          <Image source={tenant.logoImage} style={styles.logoImage} resizeMode="contain" />
+        ) : (
+          <View style={[styles.logoCircle, { backgroundColor: tenant.primaryColor }]}>
+            <Text style={styles.logoText}>{tenant.logoText}</Text>
+          </View>
+        )}
         <Text style={[styles.insurerName, { color: tenant.primaryColor }]}>
           {tenant.name}
         </Text>
@@ -87,6 +92,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
     paddingTop: 16,
+  },
+  logoImage: {
+    width: 160,
+    height: 80,
+    marginBottom: 16,
   },
   logoCircle: {
     width: 80,
