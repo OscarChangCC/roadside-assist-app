@@ -1,6 +1,7 @@
 export type TenantConfig = {
   id: string;
   name: string;
+  apiProgram: string;
   tagline: string;
   primaryColor: string;
   secondaryColor: string;

@@ -39,9 +39,8 @@ export default function BreakdownFormScreen({ navigation }: Props) {
     try {
       const params: Record<string, string> = {
         contact_number: contactNumber.trim(),
-        insurer: tenant.insurerCode,
+        program: tenant.apiProgram,
         vehicle_reg_num: vehicleReg.trim(),
-        ticket_type: 'Breakdown',
       };
       if (location.lat) params.lat = location.lat;
       if (location.lng) params.lng = location.lng;

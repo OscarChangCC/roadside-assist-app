@@ -42,14 +42,13 @@ export default function AccidentFormScreen({ navigation }: Props) {
     try {
       const params: Record<string, string> = {
         contact_number: contactNumber.trim(),
-        insurer: tenant.insurerCode,
+        program: tenant.apiProgram,
         vehicle_reg_num: vehicleReg.trim(),
-        ticket_type: 'Accident',
       };
       if (location.lat) params.lat = location.lat;
       if (location.lng) params.lng = location.lng;
       if (selectedWorkshop) {
-        params.other_comments = `Workshop: ${selectedWorkshop.name}, ${selectedWorkshop.address}`;
+        params.remark = `Workshop: ${selectedWorkshop.name}, ${selectedWorkshop.address}`;
       }
 
       const response = await fetch(`${tenant.apiBaseUrl}/api/create_new_ticket/`, {
