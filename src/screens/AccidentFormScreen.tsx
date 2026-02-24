@@ -80,62 +80,54 @@ export default function AccidentFormScreen({ navigation }: Props) {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.flex}>
-          {/* Scrollable top fields: vehicle + contact */}
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scrollContent}
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={[styles.label, { color: tenant.primaryColor }]}>Vehicle Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g. WXY1234"
+            value={vehicleReg}
+            onChangeText={(t) => setVehicleReg(t.toUpperCase())}
+            autoCapitalize="characters"
+          />
+
+          <Text style={[styles.label, { color: tenant.primaryColor }]}>Contact Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g. +60123456789"
+            value={contactNumber}
+            onChangeText={setContactNumber}
+            keyboardType="phone-pad"
+          />
+
+          <Text style={[styles.label, { color: tenant.primaryColor }]}>Location</Text>
+          <LocationPicker
+            primaryColor={tenant.primaryColor}
+            googleMapsApiKey={tenant.googleMapsApiKey}
+            onLocationChange={setLocation}
+          />
+
+          <Text style={[styles.label, { color: tenant.primaryColor }]}>Workshop (Optional)</Text>
+          <WorkshopPicker
+            primaryColor={tenant.primaryColor}
+            selectedWorkshop={selectedWorkshop?.name ?? ''}
+            onSelect={setSelectedWorkshop}
+          />
+
+          <TouchableOpacity
+            style={[styles.submitButton, { backgroundColor: tenant.primaryColor }, submitting && styles.disabled]}
+            onPress={handleSubmit}
+            disabled={submitting}
+            activeOpacity={0.85}
           >
-            <Text style={[styles.label, { color: tenant.primaryColor }]}>Vehicle Number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. WXY1234"
-              value={vehicleReg}
-              onChangeText={(t) => setVehicleReg(t.toUpperCase())}
-              autoCapitalize="characters"
-            />
-
-            <Text style={[styles.label, { color: tenant.primaryColor }]}>Contact Number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. +60123456789"
-              value={contactNumber}
-              onChangeText={setContactNumber}
-              keyboardType="phone-pad"
-            />
-          </ScrollView>
-
-          {/* Location + Workshop — outside ScrollView (both use FlatList internally) */}
-          <View style={styles.belowScroll}>
-            <Text style={[styles.label, { color: tenant.primaryColor }]}>Location</Text>
-            <LocationPicker
-              primaryColor={tenant.primaryColor}
-              googleMapsApiKey={tenant.googleMapsApiKey}
-              onLocationChange={setLocation}
-            />
-
-            <Text style={[styles.label, { color: tenant.primaryColor }]}>Workshop (Optional)</Text>
-            <WorkshopPicker
-              primaryColor={tenant.primaryColor}
-              selectedWorkshop={selectedWorkshop?.name ?? ''}
-              onSelect={setSelectedWorkshop}
-            />
-          </View>
-
-          {/* Submit — pinned at bottom */}
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={[styles.submitButton, { backgroundColor: tenant.primaryColor }, submitting && styles.disabled]}
-              onPress={handleSubmit}
-              disabled={submitting}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.submitButtonText}>
-                {submitting ? 'Submitting…' : 'Submit Accident Report'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+            <Text style={styles.submitButtonText}>
+              {submitting ? 'Submitting…' : 'Submit Accident Report'}
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -144,14 +136,12 @@ export default function AccidentFormScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F8FAFC' },
   flex: { flex: 1 },
-  scrollContent: { padding: 24, paddingBottom: 8 },
-  belowScroll: { paddingHorizontal: 24, paddingTop: 8 },
-  footer: { padding: 24, paddingTop: 16 },
+  scrollContent: { padding: 24, paddingBottom: 48 },
   label: {
     fontSize: 12,
     fontWeight: '600',
     marginBottom: 6,
-    marginTop: 16,
+    marginTop: 20,
     textTransform: 'uppercase',
   },
   input: {
@@ -167,6 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 32,
   },
   submitButtonText: { fontSize: 17, fontWeight: '700', color: '#fff' },
   disabled: { opacity: 0.6 },
