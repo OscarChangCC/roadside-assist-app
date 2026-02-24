@@ -42,7 +42,7 @@ export default function AccidentFormScreen({ navigation }: Props) {
     try {
       const params: Record<string, string> = {
         contact_number: contactNumber.trim(),
-        program: tenant.apiProgram,
+        program: tenant.programCode,
         vehicle_reg_num: vehicleReg.trim(),
       };
       if (location.lat) params.lat = location.lat;

@@ -39,7 +39,7 @@ export default function BreakdownFormScreen({ navigation }: Props) {
     try {
       const params: Record<string, string> = {
         contact_number: contactNumber.trim(),
-        program: tenant.apiProgram,
+        program: tenant.programCode,
         vehicle_reg_num: vehicleReg.trim(),
       };
       if (location.lat) params.lat = location.lat;
@@ -60,7 +60,8 @@ export default function BreakdownFormScreen({ navigation }: Props) {
       } else {
         throw new Error('API returned failure');
       }
-    } catch {
+    } catch (error: unknown) {
+      console.error(error)
       Alert.alert('Submission Failed', 'Please call the hotline instead.');
     } finally {
       setSubmitting(false);

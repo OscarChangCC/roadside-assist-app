@@ -8,7 +8,7 @@ export type TenantConfig = {
   logoText: string;           // fallback text if no logoImage
   logoImage?: number;         // require('../../../assets/logo-xxx.png')
   apiBaseUrl: string;
-  insurerCode: string;
+  programCode: string;   // value sent as "program" to CRM API (e.g. "Pacific", "AXA")
   hotlineNumber: string;
   googleMapsApiKey: string;
 };
