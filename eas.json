@@ -21,6 +21,12 @@
       "env": {
         "EXPO_PUBLIC_TENANT": "aia"
       }
+    },
+    "pib": {
+      "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_TENANT": "pib"
+      }
     }
   },
   "submit": {
