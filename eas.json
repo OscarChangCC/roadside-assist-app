@@ -22,6 +22,16 @@
         "EXPO_PUBLIC_TENANT": "aia"
       }
     },
+    "pib-dev": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "environment": "production",
+      "env": {
+        "EXPO_PUBLIC_TENANT": "pib"
+      }
+    },
     "pib": {
       "distribution": "store",
       "env": {
