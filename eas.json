@@ -30,6 +30,11 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {},
+    "pib": {
+      "android": {
+        "applicationId": "com.thepacificinsurance.roadsideassist"
+      }
+    }
   }
 }
