@@ -4,10 +4,14 @@ const tenantMeta = {
   demo: {
     name: 'Demo Roadside Assist',
     androidPackage: 'com.answerdesk.demo.roadsideassist',
+    icon: './assets/icon.png',
+    adaptiveIcon: './assets/adaptive-icon.png',
   },
   pib: {
     name: 'TPIB Roadside Assist',
     androidPackage: 'com.thepacificinsurance.roadsideassist',
+    icon: './assets/icon-pib.png',
+    adaptiveIcon: './assets/adaptive-icon-pib.png',
   },
 };
 
@@ -19,7 +23,7 @@ module.exports = {
     slug: 'roadside-assist-app',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './assets/icon.png',
+    icon: meta.icon,
     userInterfaceStyle: 'light',
     newArchEnabled: false,
     splash: {
@@ -36,7 +40,7 @@ module.exports = {
     android: {
       package: meta.androidPackage,
       adaptiveIcon: {
-        foregroundImage: './assets/adaptive-icon.png',
+        foregroundImage: meta.adaptiveIcon,
         backgroundColor: '#ffffff',
       },
       edgeToEdgeEnabled: true,
